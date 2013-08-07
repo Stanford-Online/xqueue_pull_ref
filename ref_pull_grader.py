@@ -1,6 +1,7 @@
 import time
 import logging
 import json
+import urllib2
 import xqueue_util as util
 import settings
 import urlparse
@@ -16,6 +17,7 @@ def each_cycle():
     success_length, queue_length = get_queue_length(QUEUE_NAME, session)
     if success_length and queue_length > 0:
         success_get, queue_item = get_from_queue(QUEUE_NAME, session)
+        print(queue_item)
         success_parse, content = util.parse_xobject(queue_item, QUEUE_NAME)
         if success_get and success_parse:
             grade(content)
@@ -30,6 +32,13 @@ def each_cycle():
 
 def grade(content):
     print(content)
+    files = json.loads(content['xqueue_files'])
+    for (filename, fileurl) in files.iteritems():
+        response = urllib2.urlopen(fileurl)
+        with open(filename, 'w') as f:
+            f.write(response.read())
+        f.close()
+        response.close()
 
 def get_from_queue(queue_name,xqueue_session):
     """
