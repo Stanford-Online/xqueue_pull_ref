@@ -32,6 +32,10 @@ def each_cycle():
 
 def grade(content):
     print(content)
+    body = json.loads(content['xqueue_body'])
+    student_info = json.loads(body.get('student_info', '{}'))
+    email = student_info.get('student_email', '')
+    print("submitted by email: " + email)
     files = json.loads(content['xqueue_files'])
     for (filename, fileurl) in files.iteritems():
         response = urllib2.urlopen(fileurl)
